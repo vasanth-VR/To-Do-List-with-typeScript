@@ -1,34 +1,45 @@
+// DOM references with explicit typing
 const inputBox = document.getElementById("input-box");
 const listContainer = document.getElementById("list-container");
-function addTask(){
-    if(inputBox.value === ''){
+// Add Task
+function addTask() {
+    if (!inputBox.value.trim()) {
         alert("You must write something!");
+        return;
     }
-    else{
-        let li= document.createElement("li");
-        li.innerHTML=inputBox.value;
-        listContainer.appendChild(li);
-        let span = document.createElement("span");
-        span.innerHTML="\u00d7";
-        li.appendChild(span);
-    }
-    inputBox.value="";
+    const li = document.createElement("li");
+    li.textContent = inputBox.value;
+    const span = document.createElement("span");
+    span.textContent = "\u00d7"; // × symbol
+    li.appendChild(span);
+    listContainer.appendChild(li);
+    inputBox.value = "";
     saveData();
 }
-listContainer.addEventListener("click",function(e){
-    if(e.target.tagName === "LI"){
-        e.target.classList.toggle("checked");
+// Event Delegation for check/remove
+listContainer.addEventListener("click", (e) => {
+    const target = e.target;
+    if (target.tagName === "LI") {
+        target.classList.toggle("checked");
         saveData();
     }
-    else if(e.target.tagName === "SPAN"){
-        e.target.parentElement.remove();
+    else if (target.tagName === "SPAN" && target.parentElement) {
+        target.parentElement.remove();
         saveData();
     }
-    },false);
-function saveData(){
-        localStorage.setItem("data", listContainer.innerHTML);
- }
- function showTask(){
-    listContainer.innerHTML = localStorage.getItem("data");
- }
- showTask()
+});
+// Save data to localStorage
+function saveData() {
+    localStorage.setItem("data", listContainer.innerHTML);
+}
+// Load saved tasks
+function showTask() {
+    const data = localStorage.getItem("data");
+    if (data) {
+        listContainer.innerHTML = data;
+    }
+}
+// Initialize
+showTask();
+// Expose addTask globally for button onclick
+window.addTask = addTask;
